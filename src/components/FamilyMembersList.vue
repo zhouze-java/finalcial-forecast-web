@@ -77,18 +77,16 @@ import {getRelationDisplay} from "@/enums/index.js";
 const data = ref<FamilyMember[]>([])
 
 type FamilyMemberWithExtra = Partial<FamilyMember> & { isExtra?: boolean }
-const member: FamilyMemberWithExtra = { id: 1, isExtra: true }
+const addCardMember: FamilyMemberWithExtra = { id: 0, isExtra: true }
 
-const displayList = computed(() => {
-  return [...data.value,member]
-})
+const displayList = computed(() => [...(data.value || []), addCardMember])
 
 
 
 // 这是调用接口的
 async function fetchData() {
   try {
-    data.value = (await getFamilyList()).data
+    data.value = await getFamilyList()
   } catch (e) {
     console.error(e)
     // 错误提示已经在 request 拦截器里统一处理

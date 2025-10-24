@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import familyMembersRoutes from './familyMember.js'
+import familyMembersRoutes from '@/router/familyMember'
 
 
 const routes: RouteRecordRaw[] = [

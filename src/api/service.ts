@@ -1,0 +1,106 @@
+import axios from 'axios'
+import * as qs from 'qs'
+import router from '@/router/index'
+import { message } from 'ant-design-vue'
+
+const BASE_URL = '/api'
+const TIMEOUT_MILLISECONDS = 60000 // 超时链接
+
+const instance = axios.create({
+    withCredentials: false,
+    baseURL: BASE_URL,
+    timeout: TIMEOUT_MILLISECONDS,
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+})
+
+
+instance.interceptors.request.use((config) => {
+        // 每个接口新增时间戳
+        let timestamp = new Date().getTime()
+        if (config.url && config.url.includes('?')) {
+            config.url = `${config.url}&t=${timestamp}`
+        } else {
+            config.url = `${config.url}?t=${timestamp}`
+        }
+        // PUT POST DELETE 方式提交的数据格式化
+        if ((config.method === 'post'||config.method === 'put'||config.method === 'delete') && config.headers['Content-Type'] !== 'application/json') {
+            config.data = qs.stringify(config.data)
+        }
+        // 在发送请求之前 判断是否存在token，如果存在的话，则每个http header都加上token
+        // if (getToken()) {
+        //     // 让每个请求携带token-- ['Authorization']为自定义key 请根据实际情况自行修改
+        //     config.headers['Authorization'] = getToken()
+        // }
+        return config
+    },
+    (error) => Promise.reject(error)
+)
+
+// 响应拦截器
+instance.interceptors.response.use((response) => {
+    // 下载类型特殊处理文件名
+    const type = response.request.responseType || ''
+    if (type.includes('blob')) {
+        let disposition = response.headers['content-disposition']
+        let filename = '默认文件名'
+        if (disposition && disposition.indexOf('filename=') !== -1) {
+            filename = decodeURI(disposition.substring(disposition.indexOf('filename=') + 9, disposition.length))
+        }
+        response.data.filename = filename
+    }
+    return response.data
+}, (error) => {
+    switch (error.response && error.response.status) {
+        case 400:
+            error.message = '请求错误(400)'
+            message.error({
+                message: error.response.data.msg || error.message
+            })
+            break
+        case 401:
+            error.message = '登录信息已过期，请重新登录'
+            break
+        case 403:
+            error.message = '没有权限'
+            break
+        case 404:
+            error.message = '资源不存在'
+            break
+        case 408:
+            error.message = '请求超时(408)'
+            message.error({
+                message: error.response.data.msg || error.message
+            })
+            break
+        case 500:
+            error.message = '服务器错误(500)'
+            message.error({
+                message: error.response.data.msg || error.message
+            })
+            break
+        case 501:
+            error.message = '服务未实现(501)'
+            break
+        case 502:
+            error.message = '网络错误(502)'
+            break
+        case 503:
+            error.message = '服务不可用(503)'
+            break
+        case 504:
+            error.message = '网络超时(504)'
+            break
+        case 505:
+            error.message = 'HTTP版本不受支持(505)'
+            break
+    }
+    if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
+        message.error({
+            message: '网络异常'
+        })
+    }
+    return Promise.reject(error)
+})
+export default instance
