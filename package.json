@@ -1,0 +1,37 @@
+{
+  "name": "finalcial-forecast-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --mode development",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "ant-design-vue": "^4.0.0-rc.6",
+    "axios": "^1.12.2",
+    "chance": "^1.1.13",
+    "echarts": "^5.4.3",
+    "html2canvas": "^1.4.1",
+    "lucide-vue-next": "^0.546.0",
+    "naive-ui": "^2.34.6",
+    "pinia": "^2.1.6",
+    "qs": "^6.14.0",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@types/chance": "^1.1.7",
+    "@types/node": "^24.9.1",
+    "@types/qs": "^6.14.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.11",
+    "vite-plugin-vue-devtools": "^8.0.3",
+    "vue": "^3.5.22"
+  }
+}

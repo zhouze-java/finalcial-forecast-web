@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    /* 输出 JavaScript 版本（非常关键） */
+    "target": "ES2020",
+
+    /* 使用 ES 模块规范 */
+    "module": "ESNext",
+
+    /* 路径别名 */
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    /* 模块解析方式 */
+    "moduleResolution": "nodenext",
+
+    /* 开启严格模式 */
+    "strict": true,
+
+    /* 跳过库检查，提高编译速度 */
+    "skipLibCheck": true,
+
+    /* 支持类字段新语法 */
+    "useDefineForClassFields": true,
+
+    /* 生成 source map，方便调试 */
+    "sourceMap": true,
+
+    /* 允许导入 JSON 文件 */
+    "resolveJsonModule": true,
+
+    /* 兼容 Vue 单文件组件 */
+    "types": ["vite/client","node"]
+  },
+  "include": ["src/**/*", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

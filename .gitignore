@@ -1,0 +1,56 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
+
+.eslintcache
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Vitest
+__screenshots__/
+
+# Project exclude paths
+/src/api/family/familyMember.js
+/src/api/family/familyMember.js.map
+/src/api/request.js
+/src/api/request.js.map
+/src/enums/family/FamilyMemberEnum.js
+/src/enums/family/FamilyMemberEnum.js.map
+/src/enums/index.js
+/src/enums/index.js.map
+/src/router/familyMember.js
+/src/router/familyMember.js.map
+/src/router/index.js
+/src/router/index.js.map
+/src/stores/familyMembers.js
+/src/stores/familyMembers.js.map
+/src/main.js
+/src/main.js.map
+/vite.config.js
+/vite.config.js.map
