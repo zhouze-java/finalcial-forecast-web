@@ -5,14 +5,14 @@
 
     /* 使用 ES 模块规范 */
     "module": "ESNext",
-
+    "baseUrl": ".",
     /* 路径别名 */
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
 
     /* 模块解析方式 */
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
 
     /* 开启严格模式 */
     "strict": true,

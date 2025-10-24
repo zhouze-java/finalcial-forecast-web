@@ -1,6 +1,5 @@
 import axios from 'axios'
 import * as qs from 'qs'
-import router from '@/router/index'
 import { message } from 'ant-design-vue'
 
 const BASE_URL = '/api'
@@ -11,13 +10,13 @@ const instance = axios.create({
     baseURL: BASE_URL,
     timeout: TIMEOUT_MILLISECONDS,
     headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json;charset=UTF-8'
     }
 })
 
 
 instance.interceptors.request.use((config) => {
-        // 每个接口新增时间戳
+     // 每个接口新增时间戳
         let timestamp = new Date().getTime()
         if (config.url && config.url.includes('?')) {
             config.url = `${config.url}&t=${timestamp}`
@@ -25,18 +24,14 @@ instance.interceptors.request.use((config) => {
             config.url = `${config.url}?t=${timestamp}`
         }
         // PUT POST DELETE 方式提交的数据格式化
-        if ((config.method === 'post'||config.method === 'put'||config.method === 'delete') && config.headers['Content-Type'] !== 'application/json') {
+        if ((config.method === 'post' || config.method === 'put' || config.method === 'delete') && config.headers['Content-Type'] !== 'application/json') {
             config.data = qs.stringify(config.data)
         }
-        // 在发送请求之前 判断是否存在token，如果存在的话，则每个http header都加上token
-        // if (getToken()) {
-        //     // 让每个请求携带token-- ['Authorization']为自定义key 请根据实际情况自行修改
-        //     config.headers['Authorization'] = getToken()
-        // }
+
         return config
     },
     (error) => Promise.reject(error)
-)
+);
 
 // 响应拦截器
 instance.interceptors.response.use((response) => {
@@ -103,4 +98,5 @@ instance.interceptors.response.use((response) => {
     }
     return Promise.reject(error)
 })
+
 export default instance

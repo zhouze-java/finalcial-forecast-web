@@ -1,4 +1,4 @@
-import request from '@/api/index'
+import request from '@/api/request'
 
 export interface FamilyMember {
     /** 主键 */
