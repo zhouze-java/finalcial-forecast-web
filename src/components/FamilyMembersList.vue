@@ -8,14 +8,14 @@
         <!-- cursor 是设置鼠标悬停展示什么, 手 还是 默认的 -->
         <a-card
             :ref="(el: any) => setCardRefs(el, item.id)"
-
+            :item="item"
             :key="item.id"
             v-if="!item.isExtra"
             hoverable
             style="min-width: 300px; min-height: 150px; cursor: default"
         >
           <template #actions>
-            <edit-outlined key="edit"/>
+            <edit-outlined key="edit" @click="showSaveModal(item)" />
             <!-- 删除按钮加二次确认 -->
             <a-popconfirm
                 title="确定要删除该成员吗？"
@@ -59,15 +59,21 @@
             hoverable
             style="min-width: 300px; min-height: 150px; display:flex; align-items:center; justify-content:center; text-align:center;"
         >
-          <plus-outlined style="font-size: 24px; color: #999"/>
+          <plus-outlined style="font-size: 24px; color: #999" @click="showSaveModal()"/>
         </a-card>
       </a-list-item>
     </template>
   </a-list>
+
+  <FamilyMemberEditModal v-model:open="modalVisible" @close="modalVisible = false"
+    :item="selectedMember || null"
+  />
 </template>
 
 <script setup lang="ts">
 import {onMounted, computed, ref, reactive} from 'vue';
+
+import FamilyMemberEditModal from "@/components/FamilyMemberEditModal.vue";
 
 import type {FamilyMember} from '@/api/family/familyMember'
 import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMember'
@@ -83,9 +89,7 @@ const addCardMember: FamilyMemberWithExtra = { id: 0, isExtra: true }
 
 const displayList = computed(() => [...(data.value || []), addCardMember])
 
-
-
-// 这是调用接口的
+// 调用列表查询接口
 async function fetchData() {
   try {
     data.value = await getFamilyList()
@@ -108,7 +112,7 @@ async function onDelete(item: FamilyMember) {
   if (loadingMap[item.id!]) return
   loadingMap[item.id!] = true
   try {
-    // await deleteFamilyMember(item.id!)
+    await deleteFamilyMember(item.id!)
     console.log(cardRefs.value.get(item.id!))
     const cardDom = cardRefs.value.get(item.id!) as HTMLElement
 
@@ -143,6 +147,17 @@ const setCardRefs = (el: any, id: number) => {
     cardRefs.value.delete(id)
   }
 };
+
+
+// 新增 / 编辑
+const modalVisible = ref(false)
+// 被选中的详情成员
+const selectedMember = ref<FamilyMember | null>(null)
+const showSaveModal = (member = null) => {
+  selectedMember.value = member
+  modalVisible.value = true
+}
+
 
 </script>
 

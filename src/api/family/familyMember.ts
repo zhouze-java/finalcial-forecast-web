@@ -27,6 +27,10 @@ export function getFamilyList() {
     return request.get<FamilyMember[]>('/familyMember/list')
 }
 
+export function getFamilyMemberById(id: number) {
+    return request.get<FamilyMember>(`/familyMember/${id}`)
+}
+
 export function addFamilyMember(data: FamilyMember) {
     return request.post('/familyMember', data)
 }
