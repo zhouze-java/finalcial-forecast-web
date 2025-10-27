@@ -7,7 +7,8 @@
       <a-list-item>
         <!-- cursor 是设置鼠标悬停展示什么, 手 还是 默认的 -->
         <a-card
-            ref="el => cardRefs.value[item.id] = el"
+            :ref="(el: any) => setCardRefs(el, item.id)"
+
             :key="item.id"
             v-if="!item.isExtra"
             hoverable
@@ -35,7 +36,7 @@
 
           <a-card-meta>
             <template #avatar>
-              <a-avatar v-if="item.avatar != null" :src="item.avatar"/>
+               <a-avatar v-if="item.avatar != null" :src="item.avatar"/>
               <a-avatar v-else src="https://joeschmoe.io/api/v1/random"/>
             </template>
             <template #title>
@@ -71,6 +72,7 @@ import {onMounted, computed, ref, reactive} from 'vue';
 import type {FamilyMember} from '@/api/family/familyMember'
 import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMember'
 import {getRelationDisplay} from "@/enums/index.js";
+import Disintegrate from "@/utils/Disintegrate";
 
 
 // 初始数据
@@ -106,8 +108,20 @@ async function onDelete(item: FamilyMember) {
   if (loadingMap[item.id!]) return
   loadingMap[item.id!] = true
   try {
-    await deleteFamilyMember(item.id!)
-    data.value = data.value.filter(d => d.id !== item.id)
+    // await deleteFamilyMember(item.id!)
+    console.log(cardRefs.value.get(item.id!))
+    const cardDom = cardRefs.value.get(item.id!) as HTMLElement
+
+    // 先执行沙化动画
+    await Disintegrate.apply(cardDom as HTMLElement, {
+      duration: 1,
+      callback: () => {
+        // 动画结束后的回调：删除数据，触发重新渲染
+        data.value = data.value.filter(d => d.id !== item.id)
+        loadingMap[item.id!] = false
+      }
+    })
+
   } catch (e) {
     console.error(e)
   } finally {
@@ -115,8 +129,21 @@ async function onDelete(item: FamilyMember) {
   }
 }
 
-// 用于存储每个卡片的 DOM
-const cardRefs = ref({})
+// 使用对象存储每个卡片DOM
+const cardRefs = ref<Map<number, HTMLElement>>(new Map())
+
+// 获取到每个卡片的 dom
+const setCardRefs = (el: any, id: number) => {
+  if (el) {
+    // 如果是组件实例，取 $el；否则直接使用
+    const dom = el.$el || el
+    cardRefs.value.set(id, dom as HTMLElement)
+  } else {
+    // 组件卸载时清理
+    cardRefs.value.delete(id)
+  }
+};
+
 </script>
 
 <script lang="ts">
