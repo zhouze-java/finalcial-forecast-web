@@ -19,9 +19,9 @@ const request = {
         return request.request("DELETE", url, { params: data });
     },
 
-    request<T = any>(method = "GET", url: string, data?: any): Promise<T> {
+    request<T = any>(method = "GET", url: string, options?: any): Promise<T> {
         return new Promise((resolve, reject) => {
-            instance({method, url, ...data})
+            instance({method, url, ...options})
                 .then((res: any) => {
                     resolve(res)
                 })

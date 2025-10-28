@@ -24,7 +24,7 @@ instance.interceptors.request.use((config) => {
             config.url = `${config.url}?t=${timestamp}`
         }
         // PUT POST DELETE 方式提交的数据格式化
-        if ((config.method === 'post' || config.method === 'put' || config.method === 'delete') && config.headers['Content-Type'] !== 'application/json') {
+        if ((config.method === 'post' || config.method === 'put' || config.method === 'delete') && config.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
             config.data = qs.stringify(config.data)
         }
 

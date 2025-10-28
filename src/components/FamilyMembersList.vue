@@ -58,6 +58,7 @@
             v-else
             hoverable
             style="min-width: 300px; min-height: 150px; display:flex; align-items:center; justify-content:center; text-align:center;"
+            @click="showSaveModal()"
         >
           <plus-outlined style="font-size: 24px; color: #999" @click="showSaveModal()"/>
         </a-card>
