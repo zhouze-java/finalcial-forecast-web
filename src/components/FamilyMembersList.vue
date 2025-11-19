@@ -66,7 +66,7 @@
     </template>
   </a-list>
 
-  <FamilyMemberEditModal v-model:open="modalVisible" @close="modalVisible = false"
+  <FamilyMemberEditModal v-model:open="modalVisible" @close="modalVisible = false" @saved="handleSaved"
     :item="selectedMember || null"
   />
 </template>
@@ -110,26 +110,33 @@ const loadingMap = reactive<Record<number, boolean>>({})
 
 // 点击删除事件
 async function onDelete(item: FamilyMember) {
+  // 避免重复点击
   if (loadingMap[item.id!]) return
   loadingMap[item.id!] = true
-  try {
-    await deleteFamilyMember(item.id!)
-    console.log(cardRefs.value.get(item.id!))
-    const cardDom = cardRefs.value.get(item.id!) as HTMLElement
 
-    // 先执行沙化动画
-    await Disintegrate.apply(cardDom as HTMLElement, {
+  // 获取当前卡片 DOM
+  const cardDom = cardRefs.value.get(item.id!)
+  if (!cardDom) {
+    loadingMap[item.id!] = false
+    return
+  }
+
+  try {
+    // 调用接口删除数据
+    await deleteFamilyMember(item.id!)
+
+    // 执行动画
+    await Disintegrate.apply(cardDom, {
       duration: 1,
       callback: () => {
-        // 动画结束后的回调：删除数据，触发重新渲染
+        // 动画结束后只删除当前卡片数据，不刷新整个列表
         data.value = data.value.filter(d => d.id !== item.id)
+        cardRefs.value.delete(item.id!)
         loadingMap[item.id!] = false
       }
     })
-
   } catch (e) {
     console.error(e)
-  } finally {
     loadingMap[item.id!] = false
   }
 }
@@ -159,6 +166,11 @@ const showSaveModal = (member = null) => {
   modalVisible.value = true
 }
 
+
+// 监听编辑模态框的提交成功事件
+function handleSaved() {
+  fetchData()
+}
 
 </script>
 

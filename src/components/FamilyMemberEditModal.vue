@@ -63,7 +63,7 @@
           name="name"
           :rules="[{ required: true, message: '请输入姓名' }]"
       >
-        <a-input v-model:value="formFamilyMember.name" maxlength="50"  placeholder="请输入姓名" />
+        <a-input v-model:value="formFamilyMember.name" :maxlength=50  placeholder="请输入姓名" />
       </a-form-item>
 
       <a-form-item
@@ -113,7 +113,8 @@ import {getFamilyMemberById, addFamilyMember, updateFamilyMember} from "@/api/fa
 import type {FamilyMember} from "@/api/family/familyMember";
 import {FamilyMemberRelationMap} from "@/enums/family/FamilyMemberEnum";
 import {UploadOutlined} from "@ant-design/icons-vue"
-import familyMember from "@/router/familyMember";
+import { message } from 'ant-design-vue'
+
 
 // 定义一个参数, 接收父组件传过来的值, item 是名称, 后面的是元数据. 类型/是否为空
 const props = defineProps<{
@@ -156,45 +157,62 @@ const defaultAvatars = [
 ]
 
 // 当父组件传来的 item 变化时，更新表单
-watch(
-    () => props.item,
-    async (val) => {
-      console.log("val", val);
-      console.log("val", visible.value);
-      // 根据id 调用详情页
-      if (val && 'id' in val && val.id !== 0) {
-        formFamilyMember.value = await getFamilyMemberById(val.id!);
-      } else {
-        formFamilyMember.value = createDefaultFormFamilyMember();
-      }
-    },
-    { immediate: true }
-)
+watch(visible, async (val) => {
+  if (val) {
+    if (props.item && 'id' in props.item && props.item.id !== 0) {
+      formFamilyMember.value = await getFamilyMemberById(props.item.id!);
+    } else {
+      formFamilyMember.value = createDefaultFormFamilyMember();
+    }
+    formRef.value?.resetFields();
+  }
+})
 
 const emit = defineEmits<{
   (e: 'update:open', value: boolean): void
+  (e: 'saved'): void
 }>()
 
 // 取消事件
 function handleCancel() {
   // 重置表单内容
   formFamilyMember.value = createDefaultFormFamilyMember();
+
+  // 重置表单验证状态
+  formRef.value?.resetFields();
+
   visible.value = false
   // 通知父组件关闭
   emit('update:open', false)
 }
 
+// 表单实例, 拿到表单 ref
+const formRef = ref<any>(null)
+
 // 提交事件
+const submitting = ref(false)
 async function handleSubmit(formFamilyMember: FamilyMember){
-  if (formFamilyMember.id) {
-    // 更新
-    await updateFamilyMember(formFamilyMember.id, formFamilyMember);
-  } else {
-    // 新增
-    await addFamilyMember(formFamilyMember)
+  submitting.value = true;
+  // 表单校验
+  try {
+    // 组件提供的校验方法
+     await formRef.value?.validate()
+    if (formFamilyMember.id) {
+      // 更新
+      await updateFamilyMember(formFamilyMember.id, formFamilyMember);
+    } else {
+      // 新增
+      await addFamilyMember(formFamilyMember)
+    }
+    visible.value = false
+    emit('update:open', false)
+
+    // 通知父组件刷新列表
+    emit('saved')
+
+  } finally {
+    submitting.value = false
   }
-  visible.value = false
-  emit('update:open', false)
 }
 
 // 上传前校验，限制图片大小和类型
@@ -226,11 +244,12 @@ function handleUpload({ file, onSuccess }: any) {
   };
 }
 
+// 头像气泡框
 const avatarPopoverVisible = ref(false);
-
 function selectAvatar(avatar: string) {
   formFamilyMember.value.avatar = avatar;
   avatarPopoverVisible.value = false;
 }
+
 
 </script>

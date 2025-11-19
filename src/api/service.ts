@@ -33,6 +33,27 @@ instance.interceptors.request.use((config) => {
     (error) => Promise.reject(error)
 );
 
+function parseMessage(message: any) {
+    if (!message) {
+        return message
+    }
+
+    let text: string
+
+    if (typeof message === 'string') {
+        // 直接是字符串
+        text = message
+    } else if (typeof message === 'object' && message !== null) {
+        // 对象，提取所有 value 并拼成字符串
+        text = Object.values(message).join(', ')
+    } else {
+        // fallback
+        text = message
+    }
+
+    return text
+}
+
 // 响应拦截器
 instance.interceptors.response.use((response) => {
     // 下载类型特殊处理文件名
@@ -50,51 +71,52 @@ instance.interceptors.response.use((response) => {
     switch (error.response && error.response.status) {
         case 400:
             error.message = '请求错误(400)'
-            message.error({
-                message: error.response.data.msg || error.message
-            })
+            const msg = parseMessage(error.response?.data?.message)
+            message.error(msg || error.message)
             break
         case 401:
             error.message = '登录信息已过期，请重新登录'
+            message.error(error.message)
             break
         case 403:
             error.message = '没有权限'
+            message.error(error.message)
             break
         case 404:
             error.message = '资源不存在'
+            message.error(error.message)
             break
         case 408:
             error.message = '请求超时(408)'
-            message.error({
-                message: error.response.data.msg || error.message
-            })
+            message.error(error.response?.data?.msg || error.message)
             break
         case 500:
             error.message = '服务器错误(500)'
-            message.error({
-                message: error.response.data.msg || error.message
-            })
+            message.error(error.response?.data?.msg || error.message)
             break
         case 501:
             error.message = '服务未实现(501)'
+            message.error(error.message)
             break
         case 502:
             error.message = '网络错误(502)'
+            message.error(error.message)
             break
         case 503:
             error.message = '服务不可用(503)'
+            message.error(error.message)
             break
         case 504:
             error.message = '网络超时(504)'
+            message.error(error.message)
             break
         case 505:
             error.message = 'HTTP版本不受支持(505)'
+            message.error(error.message)
             break
     }
     if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
-        message.error({
-            message: '网络异常'
-        })
+        message.error("网络异常")
     }
     return Promise.reject(error)
 })
