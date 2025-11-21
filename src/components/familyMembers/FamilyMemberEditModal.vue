@@ -109,8 +109,8 @@
 
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue'
-import {getFamilyMemberById, addFamilyMember, updateFamilyMember} from "@/api/family/familyMember";
-import type {FamilyMember} from "@/api/family/familyMember";
+import {getFamilyMemberById, addFamilyMember, updateFamilyMember} from "@/api/family/familyMemberApi";
+import type {FamilyMemberApi} from "@/api/family/familyMemberApi";
 import {FamilyMemberRelationMap} from "@/enums/family/FamilyMemberEnum";
 import {UploadOutlined} from "@ant-design/icons-vue"
 import { message } from 'ant-design-vue'
@@ -119,7 +119,7 @@ import { message } from 'ant-design-vue'
 // 定义一个参数, 接收父组件传过来的值, item 是名称, 后面的是元数据. 类型/是否为空
 const props = defineProps<{
   open: boolean
-  item?: FamilyMember | null
+  item?: FamilyMemberApi | null
 }>()
 
 const visible = ref(props.open);
@@ -131,7 +131,7 @@ watch(
 )
 
 // 新增默认表单对象工厂函数
-function createDefaultFormFamilyMember(): FamilyMember {
+function createDefaultFormFamilyMember(): FamilyMemberApi {
   return {
     avatar: "",
     name: "",
@@ -143,7 +143,7 @@ function createDefaultFormFamilyMember(): FamilyMember {
 }
 
 // 表单数据
-const formFamilyMember = ref<FamilyMember>(createDefaultFormFamilyMember());
+const formFamilyMember = ref<FamilyMemberApi>(createDefaultFormFamilyMember());
 
 // 默认头像数组
 const defaultAvatars = [
@@ -191,7 +191,7 @@ const formRef = ref<any>(null)
 
 // 提交事件
 const submitting = ref(false)
-async function handleSubmit(formFamilyMember: FamilyMember){
+async function handleSubmit(formFamilyMember: FamilyMemberApi){
   submitting.value = true;
   // 表单校验
   try {

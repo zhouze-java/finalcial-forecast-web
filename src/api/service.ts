@@ -66,6 +66,12 @@ instance.interceptors.response.use((response) => {
         }
         response.data.filename = filename
     }
+    const { showSuccessMessage } = response.config as any
+    if (showSuccessMessage && (response.status === 200 || response.status === 201)) {
+        const msg = parseMessage(response.data?.message) || '操作成功'
+        message.success(msg)
+    }
+
     return response.data
 }, (error) => {
     switch (error.response && error.response.status) {

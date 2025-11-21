@@ -36,8 +36,8 @@
 
           <a-card-meta>
             <template #avatar>
-               <a-avatar v-if="item.avatar != null" :src="item.avatar"/>
-              <a-avatar v-else src="https://joeschmoe.io/api/v1/random"/>
+               <a-avatar :size="55" v-if="item.avatar != null" :src="item.avatar"/>
+               <a-avatar :size="55" v-else src="https://joeschmoe.io/api/v1/random"/>
             </template>
             <template #title>
               {{ item.name }}
@@ -74,18 +74,18 @@
 <script setup lang="ts">
 import {onMounted, computed, ref, reactive} from 'vue';
 
-import FamilyMemberEditModal from "@/components/FamilyMemberEditModal.vue";
+import FamilyMemberEditModal from "@/components/familyMembers/FamilyMemberEditModal.vue";
 
-import type {FamilyMember} from '@/api/family/familyMember'
-import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMember'
-import {getRelationDisplay} from "@/enums/index.js";
+import type {FamilyMemberApi} from '@/api/family/familyMemberApi'
+import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMemberApi'
+import {getRelationDisplay} from "@/enums";
 import Disintegrate from "@/utils/Disintegrate";
 
 
 // 初始数据
-const data = ref<FamilyMember[]>([])
+const data = ref<FamilyMemberApi[]>([])
 
-type FamilyMemberWithExtra = Partial<FamilyMember> & { isExtra?: boolean }
+type FamilyMemberWithExtra = Partial<FamilyMemberApi> & { isExtra?: boolean }
 const addCardMember: FamilyMemberWithExtra = { id: 0, isExtra: true }
 
 const displayList = computed(() => [...(data.value || []), addCardMember])
@@ -108,8 +108,8 @@ onMounted(() => {
 // 用 reactive 包装对象, 点了删除就把 id 放进来,防止重复点击, reactive的作用是响应式的, 对象的属性变化会被 Vue 追踪, 当loadingMap[item.id]改变的时候, 按钮的 cursor 和 opacity 会自动更新
 const loadingMap = reactive<Record<number, boolean>>({})
 
-// 点击删除事件
-async function onDelete(item: FamilyMember) {
+// 点击删除事件, 这里有问题, 从前往后删除卡片的时候沙化动画有问题
+async function onDelete(item: FamilyMemberApi) {
   // 避免重复点击
   if (loadingMap[item.id!]) return
   loadingMap[item.id!] = true
@@ -160,7 +160,7 @@ const setCardRefs = (el: any, id: number) => {
 // 新增 / 编辑
 const modalVisible = ref(false)
 // 被选中的详情成员
-const selectedMember = ref<FamilyMember | null>(null)
+const selectedMember = ref<FamilyMemberApi | null>(null)
 const showSaveModal = (member = null) => {
   selectedMember.value = member
   modalVisible.value = true

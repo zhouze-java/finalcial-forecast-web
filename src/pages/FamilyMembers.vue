@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import FamilyMembersList from '../components/FamilyMembersList.vue';
+import FamilyMembersList from '../components/familyMembers/FamilyMembersList.vue';
 </script>
 
 
