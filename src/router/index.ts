@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import familyMembersRoutes from '@/router/familyMember'
 import incomeRoutes from "@/router/incomePage";
+import expenseRoutes from "@/router/expensePage";
 
 
 const routes: RouteRecordRaw[] = [
     ...familyMembersRoutes,
     ...incomeRoutes,
+    ...expenseRoutes,
     {
         path: "/",
         name: "index",

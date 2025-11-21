@@ -4,7 +4,7 @@
         :show-line="showLine"
         :show-icon="showIcon"
         :tree-data="treeData"
-        :expanded-keys="expandedKeys"
+        v-model:expandedKeys="expandedKeys"
         @select="onSelect"
     >
       <template #title="{ dataRef }">
@@ -15,30 +15,76 @@
           </a-tooltip>
           <!-- 根节点悬浮显示新增按钮，独立于节点 hover区域 -->
           <div v-if="dataRef.key === 'root'" class="node-add-btn-wrapper">
-            <PlusCircleOutlined class="node-add-btn" @click.stop="handleAdd(dataRef)" />
+            <PlusCircleOutlined class="node-add-btn" @click.stop="handleOperateButton()"/>
           </div>
 
           <!-- 其他节点展示删除 -->
           <div v-if="dataRef.key !== 'root'" class="node-edit-btn-wrapper">
-            <span><EditOutlined  class="node-add-btn" @click.stop="handleAdd(dataRef)" /></span>
-            <span><MinusCircleOutlined class="node-add-btn" @click.stop="handleAdd(dataRef)" /></span>
+            <span><EditOutlined class="node-add-btn" @click.stop="handleOperateButton(dataRef.key)"/></span>
+            <span>
+              <a-popconfirm
+                  title="确定要删除吗？"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="() => onDelete(dataRef.key)"
+              >
+                <MinusCircleOutlined class="node-add-btn"/>
+              </a-popconfirm>
+            </span>
           </div>
         </div>
       </template>
     </a-tree>
   </div>
+
+  <TypeEditModal v-if="props.type === 'income'" :id="editModalItemId" :type="props.type"
+                 :api="{
+                    fetchDetail: getIncomeTypeDetail,
+                    create: createIncomeType,
+                    update: updateIncomeType,
+                 }"
+                 v-model:visible="visible"
+                 @saved="handleSaved"
+  />
+  <TypeEditModal v-else-if="props.type === 'expense'" :id="editModalItemId" :type="props.type"
+                 :api="{
+                    fetchDetail: getExpenseTypeDetail,
+                    create: createExpenseType,
+                    update: updateExpenseType,
+                 }"
+                 v-model:visible="visible"
+                 @saved="handleSaved"
+  />
+
 </template>
 
 
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue';
 import type {TreeProps} from 'ant-design-vue';
-import {getIncomeTypeList} from "@/api/income/IncomeApi";
-import {MinusCircleOutlined, PlusCircleOutlined, EditOutlined} from "@ant-design/icons-vue";
+import {EditOutlined, MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons-vue";
+import TypeEditModal from "@/components/IncomeAndExpenditure/TypeEditModal.vue";
+import {
+  createIncomeType,
+  deleteIncomeType,
+  getIncomeTypeDetail,
+  updateIncomeType
+} from "@/api/incomeAndExpenditure/IncomeApi";
+import {createExpenseType, getExpenseTypeDetail, updateExpenseType} from "@/api/incomeAndExpenditure/ExpenseApi";
+
+// 接受组件传参, 用来决定调用 收入/支出 接口
+const props = defineProps<{
+  listFunc: () => Promise<any[]>,
+  deleteFunc: () => Promise<any[]>,
+  type: 'income' | 'expense'
+}>();
+
 
 // 不展示层级线, 不展示icon
 const showLine = ref<boolean>(false);
 const showIcon = ref<boolean>(false);
+
+const visible = ref(false);
 
 const treeData = ref<TreeProps['treeData']>([]);
 const expandedKeys = ref<string[]>([])
@@ -52,11 +98,11 @@ onMounted(() => {
 })
 
 async function fetchData() {
-  const res = await getIncomeTypeList()
+  const res = await props.apiFunc()
   // 假设接口返回的数据结构为数组 [{ id, name }]
   treeData.value = [
     {
-      title: '收入类型',
+      title: props.type === 'income' ? '收入类型': '支出类型',
       key: 'root',
       children: res.map((item: any) => ({
         title: item.name,
@@ -71,8 +117,24 @@ const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
   console.log('selected', selectedKeys, info);
 };
 
-function handleAdd(node: any) {
-  console.log('新增节点', node);
+const editModalItemId = ref<number | null>(null);
+
+function handleOperateButton(id?: number) {
+  editModalItemId.value = id ? id :null;
+
+  visible.value = true;
+}
+
+function handleSaved() {
+  fetchData()
+}
+
+async function onDelete(id?: number) {
+  if (id) {
+    await deleteIncomeType(id);
+
+    await fetchData()
+  }
 }
 </script>
 
@@ -104,6 +166,7 @@ function handleAdd(node: any) {
 .node-title-text:hover + .node-add-btn-wrapper {
   opacity: 1;
 }
+
 .node-add-btn-wrapper:hover {
   opacity: 1;
 }
@@ -116,3 +179,6 @@ function handleAdd(node: any) {
   margin-left: 5px; /* 两个按钮之间 8px */
 }
 </style>
+
+
+<!-- 子组件传值给父组件需要用 v-model -->

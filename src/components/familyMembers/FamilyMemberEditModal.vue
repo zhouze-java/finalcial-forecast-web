@@ -85,15 +85,16 @@
           name="relation"
           :rules="[{ required: true, message: '请选择关系' }]"
       >
-        <a-select v-model:value="formFamilyMember.relation" placeholder="请选择关系">
-          <a-select-option
+
+        <a-radio-group v-model:value="formFamilyMember.relation">
+          <a-radio-button
               v-for="(info, key) in FamilyMemberRelationMap"
               :key="key"
               :value="key"
           >
             {{ info.desc }}
-          </a-select-option>
-        </a-select>
+          </a-radio-button>
+        </a-radio-group>
       </a-form-item>
 
       <a-form-item label="是否有收入" name="hasIncome">
@@ -108,12 +109,11 @@
 
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
-import {getFamilyMemberById, addFamilyMember, updateFamilyMember} from "@/api/family/familyMemberApi";
+import {ref, watch} from 'vue'
 import type {FamilyMemberApi} from "@/api/family/familyMemberApi";
+import {addFamilyMember, getFamilyMemberById, updateFamilyMember} from "@/api/family/familyMemberApi";
 import {FamilyMemberRelationMap} from "@/enums/family/FamilyMemberEnum";
 import {UploadOutlined} from "@ant-design/icons-vue"
-import { message } from 'ant-design-vue'
 
 
 // 定义一个参数, 接收父组件传过来的值, item 是名称, 后面的是元数据. 类型/是否为空
