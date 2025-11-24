@@ -1,10 +1,10 @@
 <template>
-  <TypeTree type="expense" :api-func="getExpenseTypeList" />
+  <TypeTree type="expense" :list-func="getExpenseTypeList" :delete-func="deleteExpenseType" />
 </template>
 
 <script setup lang="ts">
-import TypeTree from '@/components/IncomeAndExpenditure/TypeTree.vue';
-import {getExpenseTypeList} from "@/api/incomeAndExpenditure/ExpenseApi";
+import TypeTree from '@/components/incomeAndExpenditure/TypeTree.vue';
+import {deleteExpenseType, getExpenseTypeList} from "@/api/incomeAndExpenditure/ExpenseApi";
 </script>
 
 

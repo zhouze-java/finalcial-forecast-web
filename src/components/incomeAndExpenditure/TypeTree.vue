@@ -63,7 +63,7 @@
 import {onMounted, ref} from 'vue';
 import type {TreeProps} from 'ant-design-vue';
 import {EditOutlined, MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons-vue";
-import TypeEditModal from "@/components/IncomeAndExpenditure/TypeEditModal.vue";
+import TypeEditModal from "@/components/incomeAndExpenditure/TypeEditModal.vue";
 import {
   createIncomeType,
   deleteIncomeType,
@@ -75,7 +75,7 @@ import {createExpenseType, getExpenseTypeDetail, updateExpenseType} from "@/api/
 // 接受组件传参, 用来决定调用 收入/支出 接口
 const props = defineProps<{
   listFunc: () => Promise<any[]>,
-  deleteFunc: () => Promise<any[]>,
+  deleteFunc: (id: number) => Promise<any[]>,
   type: 'income' | 'expense'
 }>();
 
@@ -98,11 +98,11 @@ onMounted(() => {
 })
 
 async function fetchData() {
-  const res = await props.apiFunc()
+  const res = await props.listFunc()
   // 假设接口返回的数据结构为数组 [{ id, name }]
   treeData.value = [
     {
-      title: props.type === 'income' ? '收入类型': '支出类型',
+      title: props.type === 'income' ? '收入类型' : '支出类型',
       key: 'root',
       children: res.map((item: any) => ({
         title: item.name,
@@ -120,7 +120,7 @@ const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
 const editModalItemId = ref<number | null>(null);
 
 function handleOperateButton(id?: number) {
-  editModalItemId.value = id ? id :null;
+  editModalItemId.value = id ? id : null;
 
   visible.value = true;
 }
@@ -131,7 +131,7 @@ function handleSaved() {
 
 async function onDelete(id?: number) {
   if (id) {
-    await deleteIncomeType(id);
+    await props.deleteFunc(id);
 
     await fetchData()
   }

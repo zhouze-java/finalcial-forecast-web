@@ -31,12 +31,6 @@ const items = ref<MenuProps['items']>([
     title: '首页',
   },
   {
-    key: '/family-members',
-    icon: () => h(UserOutlined),
-    label: '成员',
-    title: '成员列表',
-  },
-  {
     key: '/incomeAndExpenses',
     icon: () => h(UnorderedListOutlined),
     label: '收支',
@@ -54,6 +48,12 @@ const items = ref<MenuProps['items']>([
       }
     ]
   },
+  {
+    key: '/family-members',
+    icon: () => h(UserOutlined),
+    label: '成员',
+    title: '成员列表',
+  }
 ])
 
 // 路由变化 更新导航选中状态
