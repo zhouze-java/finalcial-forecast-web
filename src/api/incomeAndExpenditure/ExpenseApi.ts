@@ -1,15 +1,17 @@
 import request from '@/api/request'
-import type {BaseTypeVO} from '@/api/incomeAndExpenditure/BaseTypeVO'
+import {
+    ExpenseRecordListResponse,
+    ExpenseTypeDetailResponse,
+    ExpenseTypeTreeResponse
+} from "@/api/incomeAndExpenditure/dto/response/ExpenseResponse";
+import {ExpenseRecordListRequest} from "@/api/incomeAndExpenditure/dto/request/ExpenseRequest";
 
-export interface ExpenseTypeTreeVO extends BaseTypeVO { }
-
-export interface ExpenseTypeDetailVO extends BaseTypeVO { }
 
 /**
  * 类型列表
  */
 export function getExpenseTypeList(){
-    return request.get<ExpenseTypeTreeVO[]>('/expense/typeList')
+    return request.get<ExpenseTypeTreeResponse[]>('/expense/typeList')
 }
 
 /**
@@ -17,15 +19,15 @@ export function getExpenseTypeList(){
  * @param id id
  */
 export function getExpenseTypeDetail(id: number){
-    return request.get<ExpenseTypeDetailVO>(`/expense/type/${id}`)
+    return request.get<ExpenseTypeDetailResponse>(`/expense/type/${id}`)
 }
 
 /**
  * 新建
  * @param data 保存
  */
-export function createExpenseType(data: ExpenseTypeDetailVO) {
-    return request.post<ExpenseTypeDetailVO>(`/expense/type`, data, {showSuccessMessage: true});
+export function createExpenseType(data: ExpenseTypeDetailResponse) {
+    return request.post<ExpenseTypeDetailResponse>(`/expense/type`, data, {showSuccessMessage: true});
 }
 
 /**
@@ -34,7 +36,7 @@ export function createExpenseType(data: ExpenseTypeDetailVO) {
  * @param id id
  * @param data 数据
  */
-export function updateExpenseType(id: number, data: ExpenseTypeDetailVO) {
+export function updateExpenseType(id: number, data: ExpenseTypeDetailResponse) {
     return request.put(`/expense/type/${id}`, data, {showSuccessMessage: true});
 }
 
@@ -44,4 +46,20 @@ export function updateExpenseType(id: number, data: ExpenseTypeDetailVO) {
  */
 export function deleteExpenseType(id: number) {
     return request.delete(`/expense/type/${id}`,null, {showSuccessMessage: true});
+}
+
+/**
+ * 数据列表
+ * @param param 查询参数
+ */
+export function getRecordList(param: ExpenseRecordListRequest){
+    return request.post<ExpenseRecordListResponse[]>('/expense/recordList', param)
+}
+
+/**
+ * 删除数据
+ * @param id 主键
+ */
+export function deleteRecord(id: number) {
+    return request.delete(`/expense/record/${id}`,null, {showSuccessMessage: true});
 }

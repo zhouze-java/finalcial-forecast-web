@@ -76,16 +76,16 @@ import {onMounted, computed, ref, reactive} from 'vue';
 
 import FamilyMemberEditModal from "@/components/familyMembers/FamilyMemberEditModal.vue";
 
-import type {FamilyMemberApi} from '@/api/family/familyMemberApi'
-import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMemberApi'
+import type {FamilyMemberResponse} from '@/api/family/familyMemberResponse'
+import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMemberResponse'
 import {getRelationDisplay} from "@/enums";
 import Disintegrate from "@/utils/Disintegrate";
 
 
 // 初始数据
-const data = ref<FamilyMemberApi[]>([])
+const data = ref<FamilyMemberResponse[]>([])
 
-type FamilyMemberWithExtra = Partial<FamilyMemberApi> & { isExtra?: boolean }
+type FamilyMemberWithExtra = Partial<FamilyMemberResponse> & { isExtra?: boolean }
 const addCardMember: FamilyMemberWithExtra = { id: 0, isExtra: true }
 
 const displayList = computed(() => [...(data.value || []), addCardMember])
@@ -109,7 +109,7 @@ onMounted(() => {
 const loadingMap = reactive<Record<number, boolean>>({})
 
 // 点击删除事件, 这里有问题, 从前往后删除卡片的时候沙化动画有问题
-async function onDelete(item: FamilyMemberApi) {
+async function onDelete(item: FamilyMemberResponse) {
   // 避免重复点击
   if (loadingMap[item.id!]) return
   loadingMap[item.id!] = true
@@ -160,7 +160,7 @@ const setCardRefs = (el: any, id: number) => {
 // 新增 / 编辑
 const modalVisible = ref(false)
 // 被选中的详情成员
-const selectedMember = ref<FamilyMemberApi | null>(null)
+const selectedMember = ref<FamilyMemberResponse | null>(null)
 const showSaveModal = (member = null) => {
   selectedMember.value = member
   modalVisible.value = true

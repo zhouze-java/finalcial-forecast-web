@@ -66,7 +66,6 @@ import {EditOutlined, MinusCircleOutlined, PlusCircleOutlined} from "@ant-design
 import TypeEditModal from "@/components/incomeAndExpenditure/TypeEditModal.vue";
 import {
   createIncomeType,
-  deleteIncomeType,
   getIncomeTypeDetail,
   updateIncomeType
 } from "@/api/incomeAndExpenditure/IncomeApi";
@@ -113,8 +112,12 @@ async function fetchData() {
   ]
 }
 
+const emit = defineEmits<{
+  (e:'selected' ,key: number | string, type: 'income'|'expense'):void
+}>()
+
 const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
-  console.log('selected', selectedKeys, info);
+  emit('selected', selectedKeys[0], props.type);
 };
 
 const editModalItemId = ref<number | null>(null);

@@ -1,4 +1,4 @@
-export const cycleEnum = {
+export const cycleEnum: Record<string, string> = {
     YEAR: '每年',
     MONTH: '每月',
     DAY: '每日',

@@ -1,7 +1,7 @@
 <template>
   <div class="two-col-layout">
     <div class="left-area">
-      <slot name="tree"></slot>
+      <slot name="tree" ></slot>
     </div>
 
     <div class="right-area">

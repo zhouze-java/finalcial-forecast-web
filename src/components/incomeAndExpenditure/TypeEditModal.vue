@@ -62,12 +62,12 @@
 
 import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import {ref, watch} from "vue";
-import {BaseTypeVO} from "@/api/incomeAndExpenditure/BaseTypeVO";
+import {BaseTypeResponse} from "@/api/incomeAndExpenditure/dto/response/BaseTypeResponse";
 
 const props = defineProps<{
   type: 'income' | 'expense',
   api: {
-    fetchDetail: (id: number) => Promise<BaseTypeVO>
+    fetchDetail: (id: number) => Promise<BaseTypeResponse>
     create: (data: any) => Promise<any>,
     update: (id: number, data: any) => Promise<any>
   },
@@ -78,7 +78,7 @@ const props = defineProps<{
 // 表单实例
 const formRef = ref<any>(null)
 
-const typeItem = ref<BaseTypeVO>(defaultEmptyItem());
+const typeItem = ref<BaseTypeResponse>(defaultEmptyItem());
 
 function defaultEmptyItem() {
   return {

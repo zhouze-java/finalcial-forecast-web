@@ -1,21 +1,18 @@
 import request from '@/api/request'
-import type {BaseTypeVO} from '@/api/incomeAndExpenditure/BaseTypeVO'
+import {
+    IncomeTypeTreeResponse,
+    IncomeTypeDetailResponse,
+    IncomeListResponse
+} from "@/api/incomeAndExpenditure/dto/response/IncomeResponse";
+import {IncomeRecordListRequest} from "@/api/incomeAndExpenditure/dto/request/IncomeRequest";
+import {DefaultPageResponse} from "@/api/common/DefaultPageResponse";
 
-export interface IncomeTypeTreeVO extends BaseTypeVO { }
-
-export interface IncomeTypeDetailVO extends BaseTypeVO {
-    /**
-     * 是否允许设置年化率
-     */
-    allowsAnnualRate: boolean,
-
-}
 
 /**
  * 类型列表
  */
 export function getIncomeTypeList(){
-    return request.get<IncomeTypeTreeVO[]>('/income/typeList')
+    return request.get<IncomeTypeTreeResponse[]>('/income/typeList')
 }
 
 /**
@@ -23,15 +20,15 @@ export function getIncomeTypeList(){
  * @param id id
  */
 export function getIncomeTypeDetail(id: number){
-    return request.get<IncomeTypeDetailVO>(`/income/type/${id}`)
+    return request.get<IncomeTypeDetailResponse>(`/income/type/${id}`)
 }
 
 /**
  * 新建
  * @param data 保存
  */
-export function createIncomeType(data: IncomeTypeDetailVO) {
-    return request.post<IncomeTypeDetailVO>(`/income/type`, data, {showSuccessMessage: true});
+export function createIncomeType(data: IncomeTypeDetailResponse) {
+    return request.post<IncomeTypeDetailResponse>(`/income/type`, data, {showSuccessMessage: true});
 }
 
 /**
@@ -40,7 +37,7 @@ export function createIncomeType(data: IncomeTypeDetailVO) {
  * @param id id
  * @param data 数据
  */
-export function updateIncomeType(id: number, data: IncomeTypeDetailVO) {
+export function updateIncomeType(id: number, data: IncomeTypeDetailResponse) {
     return request.put(`/income/type/${id}`, data, {showSuccessMessage: true});
 }
 
@@ -50,4 +47,20 @@ export function updateIncomeType(id: number, data: IncomeTypeDetailVO) {
  */
 export function deleteIncomeType(id: number) {
     return request.delete(`/income/type/${id}`,null, {showSuccessMessage: true});
+}
+
+/**
+ * 数据列表
+ * @param param 查询参数
+ */
+export function getRecordList(param: IncomeRecordListRequest){
+    return request.post<DefaultPageResponse<IncomeListResponse>>('/income/record/list', param)
+}
+
+/**
+ * 删除记录
+ * @param id 主键
+ */
+export function deleteRecord(id: number) {
+    return request.delete(`/income/record/${id}`,null, {showSuccessMessage: true});
 }

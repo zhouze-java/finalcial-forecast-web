@@ -1,4 +1,4 @@
-export interface BaseTypeVO {
+export interface BaseTypeResponse {
     /**
      * id
      */
