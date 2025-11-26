@@ -49,6 +49,7 @@ onMounted(() => {
 })
 
 watch([()=>props.typeId,() => props.treeType], ()=>{
+  pagination.value.current = 1
   fetchData()
 })
 
@@ -58,6 +59,8 @@ function handleTableChange(
 ) {
   pagination.value.current = paginationConfig.current || 1 ;
   pagination.value.pageSize = paginationConfig.pageSize || 10 ;
+
+  fetchData()
 }
 
 async function fetchData() {
