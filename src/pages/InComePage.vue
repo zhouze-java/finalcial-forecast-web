@@ -5,6 +5,10 @@
                 @selected="handleSelected"/>
     </template>
 
+    <template #search>
+      <SearchBar />
+    </template>
+
     <template #data-list>
       <DataList :columns="columns" :list-func="getRecordList" :delete-func="deleteRecord" :type-id="selectedKey"
                 :tree-type="treeType"/>
@@ -20,6 +24,7 @@ import TreeAndDataListLayout from "@/components/common/TreeAndDataListLayout.vue
 import type {TableColumnsType} from "ant-design-vue";
 import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import {ref} from "vue";
+import SearchBar from "@/components/incomeAndExpenditure/SearchBar.vue";
 
 // tree 里选中的类型
 const selectedKey = ref<number | string | null>(null);

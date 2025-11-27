@@ -76,8 +76,8 @@ import {onMounted, computed, ref, reactive} from 'vue';
 
 import FamilyMemberEditModal from "@/components/familyMembers/FamilyMemberEditModal.vue";
 
-import type {FamilyMemberResponse} from '@/api/family/familyMemberResponse'
-import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMemberResponse'
+import type {FamilyMemberResponse} from '@/api/family/familyMemberApi'
+import {getFamilyList, deleteFamilyMember} from '@/api/family/familyMemberApi'
 import {getRelationDisplay} from "@/enums";
 import Disintegrate from "@/utils/Disintegrate";
 

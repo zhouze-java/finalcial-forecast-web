@@ -110,8 +110,8 @@
 
 <script setup lang="ts">
 import {ref, watch} from 'vue'
-import type {FamilyMemberResponse} from "@/api/family/familyMemberResponse";
-import {addFamilyMember, getFamilyMemberById, updateFamilyMember} from "@/api/family/familyMemberResponse";
+import type {FamilyMemberResponse} from "@/api/family/familyMemberApi";
+import {addFamilyMember, getFamilyMemberById, updateFamilyMember} from "@/api/family/familyMemberApi";
 import {FamilyMemberRelationMap} from "@/enums/family/FamilyMemberEnum";
 import {UploadOutlined} from "@ant-design/icons-vue"
 
