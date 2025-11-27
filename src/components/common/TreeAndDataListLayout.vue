@@ -10,6 +10,7 @@
       <div class="search-bar">
         <slot name="search"></slot>
       </div>
+
       <!-- 列表区域 -->
       <div class="content-area">
         <slot name="data-list"></slot>
