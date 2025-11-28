@@ -56,7 +56,7 @@ const columns: TableColumnsType = [
     title: '操作',
     key: 'operation',
     fixed: 'right',
-    width: 100,
+    width: 111,
   },
 ];
 

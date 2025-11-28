@@ -7,9 +7,13 @@
       :loading="loading"
       @change="handleTableChange"
   >
-    <template #bodyCell="{ column }">
+    <template #bodyCell="{ record, column }">
       <template v-if="column.key === 'operation'">
-        <a>删除</a>
+        <a>Edit</a>
+        <a-popconfirm title="Are you sure？" @confirm="() => onDelete(record.id)">
+          <template #icon><question-circle-outlined style="color: red" /></template>
+          <a href="#">Delete</a>
+        </a-popconfirm>
       </template>
     </template>
   </a-table>
@@ -23,6 +27,8 @@ import {DefaultPageResponse} from "@/api/common/DefaultPageResponse";
 import {BaseListResponse} from "@/api/incomeAndExpenditure/dto/response/BaseListResponse";
 import {BasePageQueryRequest} from "@/api/common/BasePageQueryRequest";
 import {FormState} from "@/components/incomeAndExpenditure/SearchBar.vue";
+import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+
 
 const props = defineProps<{
   listFunc: (param: BasePageQueryRequest) => Promise<DefaultPageResponse<BaseListResponse>>,
@@ -101,6 +107,11 @@ async function fetchData() {
   loading.value = false;
 }
 
+function onDelete(id: number) {
+  props.deleteFunc(id);
+
+  fetchData();
+}
 </script>
 
 
