@@ -6,9 +6,13 @@
                 @selected="handleSelected"/>
     </template>
 
+    <template #search>
+      <search-bar @searchBarSubmit="searchBarSubmit" />
+    </template>
+
     <template #data-list>
       <DataList :columns="columns" :list-func="getRecordList" :delete-func="deleteRecord" :tree-type="treeType"
-                :type-id="selectedKey"/>
+                :type-id="selectedKey" :search-bar-form="searchBarFormRef"/>
     </template>
   </tree-and-data-list-layout>
 </template>
@@ -26,6 +30,7 @@ import TreeAndDataListLayout from "@/components/common/TreeAndDataListLayout.vue
 import type {TableColumnsType} from "ant-design-vue";
 import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import {ref} from 'vue'
+import SearchBar from "@/components/incomeAndExpenditure/SearchBar.vue";
 
 // tree 里选中的类型
 const selectedKey = ref<number | string | null>(null);
@@ -56,6 +61,11 @@ const columns: TableColumnsType = [
     width: 100,
   },
 ];
+
+const searchBarFormRef = ref<FormState>(null);
+function searchBarSubmit(searchBarForm: FormData) {
+  searchBarFormRef.value = searchBarForm;
+}
 
 </script>
 

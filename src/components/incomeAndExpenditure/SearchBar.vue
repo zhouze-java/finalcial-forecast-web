@@ -10,20 +10,18 @@
       @finishFailed="onFinishFailed"
   >
     <a-form-item label="描述" name="description">
-      <a-input v-model:value="searchBarForm.description"/>
+      <a-input v-model:value="searchBarForm.description" placeholder="请输入描述"/>
     </a-form-item>
 
     <a-form-item label="成员" name="memberId">
       <a-select
-          v-model:value="value"
+          v-model:value="searchBarForm.memberId"
           show-search
           placeholder="选择成员"
           style="width: 200px"
           :options="options"
           :filter-option="filterOption"
-          @focus="handleFocus"
-          @blur="handleBlur"
-          @change="handleChange"
+          allow-clear
       ></a-select>
     </a-form-item>
 
@@ -34,14 +32,16 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import type {SelectProps} from 'ant-design-vue';
-import {ref} from 'vue';
 import {getFamilyList} from "@/api/family/familyMemberApi";
-import {FamilyMemberResponse} from "@/api/family/dto/response/FamilyMemberResponse";
 
 
-interface FormState {
+const emit =defineEmits<{
+  (e: 'searchBarSubmit', searchBarForm: FormState): void;
+}>()
+
+export interface FormState {
   description: string;
   memberId?: number;
 }
@@ -51,8 +51,9 @@ const searchBarForm = reactive<FormState>({
   memberId: null
 });
 
-const onFinish = (values: any) => {
-  console.log('Success:', values);
+
+const onFinish = (values: FormState) => {
+  emit("searchBarSubmit", values);
 };
 
 const onFinishFailed = (errorInfo: any) => {
@@ -68,6 +69,7 @@ onMounted(() => {
 })
 
 async function fetchOptionsData() {
+
   options.value = (await getFamilyList())
       .map(it => {
         return {
@@ -75,5 +77,14 @@ async function fetchOptionsData() {
           label: it.name,
         }
       })
+}
+
+/**
+ * 下拉框筛选
+ * @param input 用户输入的内容
+ * @param option 选项
+ */
+function filterOption(input: string, option: any) {
+  return option.label.toLowerCase().includes(input.toLowerCase());
 }
 </script>

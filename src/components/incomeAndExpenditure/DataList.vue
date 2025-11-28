@@ -22,6 +22,7 @@ import {onMounted, ref, watch} from "vue";
 import {DefaultPageResponse} from "@/api/common/DefaultPageResponse";
 import {BaseListResponse} from "@/api/incomeAndExpenditure/dto/response/BaseListResponse";
 import {BasePageQueryRequest} from "@/api/common/BasePageQueryRequest";
+import {FormState} from "@/components/incomeAndExpenditure/SearchBar.vue";
 
 const props = defineProps<{
   listFunc: (param: BasePageQueryRequest) => Promise<DefaultPageResponse<BaseListResponse>>,
@@ -29,6 +30,7 @@ const props = defineProps<{
   columns: TableColumnsType,
   typeId: number | null,
   treeType: 'income' | 'expense',
+  searchBarForm: FormState | null,
 }>()
 
 
@@ -53,6 +55,9 @@ watch([()=>props.typeId,() => props.treeType], ()=>{
   fetchData()
 })
 
+watch(() => props.searchBarForm, ()=>{
+  fetchData()
+})
 
 function handleTableChange(
     paginationConfig: TablePaginationConfig
@@ -77,6 +82,15 @@ async function fetchData() {
     } else if (props.treeType === 'expense') {
       Object.assign(params, {expenseTypeId: props.typeId});
     }
+  }
+
+  if (props.searchBarForm) {
+    Object.keys(props.searchBarForm).forEach(key => {
+      const value = props.searchBarForm[key];
+      if (value !== null && value !== undefined && value !== '') {
+        params[key] = value;
+      }
+    })
   }
 
   const res = await props.listFunc(params);
