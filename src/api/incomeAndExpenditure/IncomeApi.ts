@@ -58,6 +58,14 @@ export function getRecordList(param: IncomeRecordListRequest){
 }
 
 /**
+ * 数据详情
+ * @param id 主键ID
+ */
+export function getRecordDetail(id: number){
+    return request.get<IncomeTypeDetailResponse>(`/income/record/${id}`);
+}
+
+/**
  * 删除记录
  * @param id 主键
  */

@@ -1,5 +1,6 @@
 import type {BaseTypeResponse} from "@/api/incomeAndExpenditure/dto/response/BaseTypeResponse";
 import {BaseListResponse} from "@/api/incomeAndExpenditure/dto/response/BaseListResponse";
+import {BaseDetailResponse} from "@/api/incomeAndExpenditure/dto/response/BaseDetailResponse";
 
 export interface IncomeTypeTreeResponse extends BaseTypeResponse { }
 
@@ -12,6 +13,11 @@ export interface IncomeTypeDetailResponse extends BaseTypeResponse {
 }
 
 export interface IncomeListResponse extends BaseListResponse {
+    /** 年化收益率（固定资产收入专用，可选） */
+    annualRate?: number
+}
+
+export interface IncomeDetailResponse extends BaseDetailResponse {
     /** 年化收益率（固定资产收入专用，可选） */
     annualRate?: number
 }

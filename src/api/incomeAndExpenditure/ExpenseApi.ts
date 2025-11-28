@@ -1,5 +1,6 @@
 import request from '@/api/request'
 import {
+    ExpenseRecordDetailResponse,
     ExpenseRecordListResponse,
     ExpenseTypeDetailResponse,
     ExpenseTypeTreeResponse
@@ -54,6 +55,14 @@ export function deleteExpenseType(id: number) {
  */
 export function getRecordList(param: ExpenseRecordListRequest){
     return request.post<ExpenseRecordListResponse[]>('/expense/recordList', param)
+}
+
+/**
+ * 数据详情
+ * @param id ID
+ */
+export function getRecordDetail(id: number){
+    return request.get<ExpenseRecordDetailResponse>(`/expense/recordDetail/${id}`);
 }
 
 /**

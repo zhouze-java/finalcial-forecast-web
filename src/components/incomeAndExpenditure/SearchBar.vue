@@ -28,13 +28,20 @@
     <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
       <a-button type="primary" html-type="submit">查询</a-button>
     </a-form-item>
+
+    <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+      <a-button type="primary" @click="onCreateButton">新建</a-button>
+    </a-form-item>
   </a-form>
+
+  <EditModal v-model:visible="visible"  :id="null"/>
 </template>
 
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue';
 import type {SelectProps} from 'ant-design-vue';
 import {getFamilyList} from "@/api/family/familyMemberApi";
+import EditModal from "@/components/incomeAndExpenditure/EditModal.vue";
 
 
 const emit =defineEmits<{
@@ -86,5 +93,11 @@ async function fetchOptionsData() {
  */
 function filterOption(input: string, option: any) {
   return option.label.toLowerCase().includes(input.toLowerCase());
+}
+
+
+const visible = ref(false);
+function onCreateButton(){
+  visible.value = true
 }
 </script>
