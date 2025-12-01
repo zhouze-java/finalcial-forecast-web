@@ -20,4 +20,10 @@ export interface IncomeListResponse extends BaseListResponse {
 export interface IncomeDetailResponse extends BaseDetailResponse {
     /** 年化收益率（固定资产收入专用，可选） */
     annualRate?: number
+
+    /** 收入类型ID */
+    incomeTypeId?: number
+
+    /** 收入类型名称 */
+    incomeTypeName?: string
 }

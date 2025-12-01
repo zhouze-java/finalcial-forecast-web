@@ -9,11 +9,17 @@
       <SearchBar @searchBarSubmit="searchBarSubmit"/>
     </template>
 
+    <template #actions>
+      <a-button type="primary" @click="onCreate">新建</a-button>
+    </template>
+
     <template #data-list>
       <DataList :columns="columns" :list-func="getRecordList" :delete-func="deleteRecord" :type-id="selectedKey"
                 :tree-type="treeType" :search-bar-form="searchBarFormRef"/>
     </template>
   </tree-and-data-list-layout>
+
+  <EditDrawer v-model:visible="visible" type="income" :detail-func="null" :type-list-func="getIncomeTypeList" />
 </template>
 
 <script setup lang="ts">
@@ -25,6 +31,7 @@ import type {TableColumnsType} from "ant-design-vue";
 import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import {ref} from "vue";
 import SearchBar, {FormState} from "@/components/incomeAndExpenditure/SearchBar.vue";
+import EditDrawer from "@/components/incomeAndExpenditure/EditDrawer.vue";
 
 // tree 里选中的类型
 const selectedKey = ref<number | string | null>(null);
@@ -64,6 +71,12 @@ const searchBarFormRef = ref<FormState | null>(null);
 function searchBarSubmit(searchBarForm: FormState) {
   searchBarFormRef.value = searchBarForm;
 }
+
+const visible = ref(false);
+function onCreate(){
+  visible.value = true
+}
+
 
 </script>
 

@@ -8,4 +8,10 @@ export interface ExpenseTypeDetailResponse extends BaseTypeResponse { }
 
 export interface ExpenseRecordListResponse extends BaseListResponse { }
 
-export interface ExpenseRecordDetailResponse extends BaseDetailResponse { }
+export interface ExpenseRecordDetailResponse extends BaseDetailResponse {
+    /** 收入类型ID */
+    expenseTypeId?: number
+
+    /** 收入类型名称 */
+    expenseTypeName?: string
+}

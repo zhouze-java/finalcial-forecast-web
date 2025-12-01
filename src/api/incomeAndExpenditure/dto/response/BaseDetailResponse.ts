@@ -8,12 +8,6 @@ export interface BaseDetailResponse {
     /** 成员名称 */
     memberName?: string
 
-    /** 收入类型ID */
-    incomeTypeId?: number
-
-    /** 收入类型名称 */
-    incomeTypeName?: string
-
     /** 周期 */
     cycle?: string
 

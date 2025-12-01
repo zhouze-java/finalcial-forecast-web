@@ -9,6 +9,10 @@
       <!-- 搜索栏插槽 -->
       <div class="search-bar">
         <slot name="search"></slot>
+        <!-- 新增按钮插槽 -->
+        <div class="button-wrapper">
+          <slot name="actions"></slot>
+        </div>
       </div>
 
       <!-- 列表区域 -->
@@ -51,12 +55,32 @@
 
 /* 搜索栏始终保持固定高度 */
 .search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: #fff;
   padding: 12px;
   border: 1px solid #f0f0f0;
   border-radius: 4px;
   margin-bottom: 12px;
 }
+
+.search-bar ::v-deep(slot[name="search"]) {
+  flex: 1; /* 搜索栏占满左边剩余空间 */
+  margin-right: 16px; /* 给按钮留空隙 */
+}
+
+.search-bar ::v-deep(slot[name="actions"]) {
+  flex-shrink: 0; /* 按钮不缩小 */
+}
+
+
+/* 按钮包裹容器 */
+.button-wrapper {
+  flex-shrink: 0;
+  margin-right: 18px; /* 控制按钮离右边的距离 */
+}
+
 
 /* 列表内容可滚动 */
 .content-area {
