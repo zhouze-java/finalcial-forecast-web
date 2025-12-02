@@ -1,6 +1,6 @@
 <template>
   <a-range-picker
-      v-model="pickerValue"
+      v-model:value="pickerValue"
       format="YYYY-MM-DD"
       @change="onChange"
   />
@@ -27,7 +27,7 @@ watch(
     () => props.timeRange,
     val => {
       if (Array.isArray(val) && val.length === 2) {
-        pickerValue.value = val.map(v =>
+        pickerValue.value = (val?.filter(Boolean) || []).map(v =>
             typeof v === 'number' ? dayjs(v) : dayjs(v, 'YYYY-MM-DD')
         )
       } else {

@@ -9,7 +9,7 @@
   >
     <template #bodyCell="{ record, column }">
       <template v-if="column.key === 'operation'">
-        <a>Edit</a>
+        <a @click="onClickEdit(record.id)">Edit</a>
         <a-popconfirm title="Are you sure？" @confirm="() => onDelete(record.id)">
           <template #icon><question-circle-outlined style="color: red" /></template>
           <a href="#">Delete</a>
@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 import type {TableColumnsType, TablePaginationConfig} from 'ant-design-vue';
-import {onMounted, ref, watch} from "vue";
+import {onMounted, Ref, ref, watch} from "vue";
 import {DefaultPageResponse} from "@/api/common/DefaultPageResponse";
 import {BaseListResponse} from "@/api/incomeAndExpenditure/dto/response/BaseListResponse";
 import {BasePageQueryRequest} from "@/api/common/BasePageQueryRequest";
@@ -34,9 +34,14 @@ const props = defineProps<{
   listFunc: (param: BasePageQueryRequest) => Promise<DefaultPageResponse<BaseListResponse>>,
   deleteFunc: (id: number) => Promise<void>,
   columns: TableColumnsType,
-  typeId: number | null,
+  typeId: number | null | string,
   treeType: 'income' | 'expense',
   searchBarForm: FormState | null,
+  refreshData: number,
+}>()
+
+const emit =defineEmits<{
+  (e: 'edit', id: number): void
 }>()
 
 
@@ -62,6 +67,10 @@ watch([()=>props.typeId,() => props.treeType], ()=>{
 })
 
 watch(() => props.searchBarForm, ()=>{
+  fetchData()
+})
+
+watch(() => props.refreshData, ()=>{
   fetchData()
 })
 
@@ -92,9 +101,9 @@ async function fetchData() {
 
   if (props.searchBarForm) {
     Object.keys(props.searchBarForm).forEach(key => {
-      const value = props.searchBarForm[key];
+      const value = props.searchBarForm?.[key];
       if (value !== null && value !== undefined && value !== '') {
-        params[key] = value;
+        params[key!] = value;
       }
     })
   }
@@ -111,6 +120,10 @@ function onDelete(id: number) {
   props.deleteFunc(id);
 
   fetchData();
+}
+
+function onClickEdit(id: number) {
+  emit('edit', id);
 }
 </script>
 

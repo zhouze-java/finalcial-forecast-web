@@ -30,7 +30,8 @@
     "resolveJsonModule": true,
 
     /* 兼容 Vue 单文件组件 */
-    "types": ["vite/client","node"]
+    "types": ["vite/client","node"],
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*", "vite.config.ts"],
   "exclude": ["node_modules", "dist"]

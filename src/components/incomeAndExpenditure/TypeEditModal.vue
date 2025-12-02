@@ -125,7 +125,12 @@ async function handleSubmit() {
   try {
     // 表单校验
     await formRef.value?.validate();
+  }catch (e) {
+    submitting.value = false;
+    return;
+  }
 
+  try {
     if (!typeItem.value.id) {
       await props.api.create(typeItem.value);
     } else {

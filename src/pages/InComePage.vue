@@ -14,17 +14,39 @@
     </template>
 
     <template #data-list>
-      <DataList :columns="columns" :list-func="getRecordList" :delete-func="deleteRecord" :type-id="selectedKey"
-                :tree-type="treeType" :search-bar-form="searchBarFormRef"/>
+      <DataList :columns="columns"
+                :list-func="getRecordList"
+                :delete-func="deleteRecord"
+                :type-id="selectedKey"
+                :tree-type="treeType"
+                :search-bar-form="searchBarFormRef"
+                @edit="onEdit"
+                :refresh-data="refreshData"
+      />
     </template>
   </tree-and-data-list-layout>
 
-  <EditDrawer v-model:visible="visible" type="income" :detail-func="null" :type-list-func="getIncomeTypeList" />
+  <EditDrawer v-if="visible"
+              v-model:visible="visible"
+              :id="editId" type="income"
+              :detail-func="getIncomeRecordDetail"
+              :type-list-func="getIncomeTypeList"
+              :save-func="saveRecord"
+              @drawerClosed="drawerClosed"
+              @saved="drawerSaved"
+  />
 </template>
 
 <script setup lang="ts">
 import TypeTree from '@/components/incomeAndExpenditure/TypeTree.vue';
-import {deleteIncomeType, deleteRecord, getIncomeTypeList, getRecordList} from "@/api/incomeAndExpenditure/IncomeApi";
+import {
+  createRecord,
+  deleteIncomeType,
+  deleteRecord,
+  getIncomeTypeList,
+  getRecordDetail,
+  getRecordList, updateRecord
+} from "@/api/incomeAndExpenditure/IncomeApi";
 import DataList from "@/components/incomeAndExpenditure/DataList.vue";
 import TreeAndDataListLayout from "@/components/common/TreeAndDataListLayout.vue";
 import type {TableColumnsType} from "ant-design-vue";
@@ -32,12 +54,14 @@ import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import {ref} from "vue";
 import SearchBar, {FormState} from "@/components/incomeAndExpenditure/SearchBar.vue";
 import EditDrawer from "@/components/incomeAndExpenditure/EditDrawer.vue";
+import {IncomeDetailResponse} from "@/api/incomeAndExpenditure/dto/response/IncomeResponse";
+import {IncomeRecordSaveRequest} from "@/api/incomeAndExpenditure/dto/request/IncomeRequest";
 
 // tree 里选中的类型
 const selectedKey = ref<number | string | null>(null);
 const treeType = ref<'income' | 'expense'>('income');
 
-function handleSelected(key: number | string, type: 'income' | 'expense') {
+function handleSelected(key: number | string | null, type: 'income' | 'expense') {
   if (!key || key === 'root') {
     key = null
   }
@@ -68,16 +92,60 @@ const columns: TableColumnsType = [
 ];
 
 const searchBarFormRef = ref<FormState | null>(null);
+
 function searchBarSubmit(searchBarForm: FormState) {
   searchBarFormRef.value = searchBarForm;
 }
 
 const visible = ref(false);
-function onCreate(){
+
+function onCreate() {
   visible.value = true
 }
 
+const editId = ref<number | null>(null);
 
+function onEdit(id: number) {
+  visible.value = true
+  editId.value = id
+}
+
+function drawerClosed() {
+  editId.value = null;
+}
+
+async function getIncomeRecordDetail(id: number) {
+  const res = await getRecordDetail(id);
+  res.typeId = res.incomeTypeId
+  return res;
+}
+
+async function saveRecord(data: any) {
+  const payload: IncomeRecordSaveRequest = {
+    description: data.description,
+    amount: data.amount,
+    incomeTypeId: data.typeId,
+    memberId: data.memberId,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    growthRate: data.growthRate,
+    annualRate: data.annualRate,
+  }
+  if (data.id) {
+    await updateRecord(data.id, payload)
+  } else {
+    await createRecord(payload)
+  }
+}
+
+const refreshData = ref(0)
+function drawerSaved(){
+  visible.value = false
+  editId.value = null;
+
+  // 通知DataList刷新列表
+  refreshData.value += 1;
+}
 </script>
 
 

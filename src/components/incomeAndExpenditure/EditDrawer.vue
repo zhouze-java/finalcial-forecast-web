@@ -10,14 +10,14 @@
 
     <template #extra>
       <a-button style="margin-right: 8px" @click="onClose">Cancel</a-button>
-      <a-button type="primary" @click="onSubmit">Submit</a-button>
+      <a-button type="primary" @click="onSubmit" :loading="submitting" >Submit</a-button>
     </template>
 
     <a-form
         :model="detailInfo"
         :label-col="{ span: 3 }"
         :wrapper-col="{ span: 20 }"
-        :ref="formRef"
+        ref="formRef"
     >
       <a-form-item label="描述" name="description"
                    :rules="[{required: true, message: '请输入描述' }]"
@@ -36,6 +36,8 @@
             :options="familyMemberOptions"
             :filter-option="filterMemberOption"
             allow-clear
+            @mousedown.prevent
+            @click.stop
         ></a-select>
       </a-form-item>
 
@@ -50,6 +52,8 @@
             :options="typeOptions"
             :filter-option="filterTypeOption"
             allow-clear
+            @mousedown.prevent
+            @click.stop
         ></a-select>
       </a-form-item>
 
@@ -64,7 +68,8 @@
       </a-form-item>
 
       <a-form-item label="时间"
-                   :rules="[{required:true, message:'请选择时间'}]"
+                   name="timeRange"
+                   :rules="[{required:true, validator: validateTimeRange}]"
       >
         <DateRangePicker :timeRange="[detailInfo.startDate,detailInfo.endDate]"
                          @update:timeRange="value => {
@@ -94,23 +99,26 @@
 <script setup lang="ts">
 
 import {onMounted, ref, watch} from "vue";
-import {BaseDetailResponse} from "@/api/incomeAndExpenditure/dto/response/BaseDetailResponse";
 import {getFamilyList} from "@/api/family/familyMemberApi";
 import type {SelectProps} from "ant-design-vue";
 import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import DateRangePicker from "@/components/common/DateRangePicker.vue";
+import dayjs from "dayjs";
 
 const emit = defineEmits<{
-  (e: 'update:visible', value: boolean): void
+  (e: 'update:visible', value: boolean): void,
+  (e: 'drawerClosed'): void
+  (e: 'saved'): void
 }
 >()
 
 const props = defineProps<{
-  id?: number,
+  id: number | null,
   visible: boolean,
   type: 'income' | 'expense',
-  detailFunc?: (id?: number) => Promise<any[]> | null,
+  detailFunc: (id: number) => Promise<any>,
   typeListFunc: () => Promise<any[]>,
+  saveFunc: (data: any) => Promise<any>
 }>()
 
 const visible = ref(props.visible);
@@ -121,9 +129,8 @@ watch(
     }
 )
 
-const submitting = ref(false);
 
-const detailInfo = ref<BaseDetailResponse>(defaultDetailInfo())
+const detailInfo = ref<any>(defaultDetailInfo())
 
 function defaultDetailInfo() {
   return {
@@ -142,6 +149,7 @@ function defaultDetailInfo() {
 
 function onClose() {
   emit('update:visible', false);
+  emit('drawerClosed');
   formRef.value?.resetFields();
 }
 
@@ -149,10 +157,20 @@ function onClose() {
 const familyMemberOptions = ref<SelectProps['options']>([]);
 const typeOptions = ref<SelectProps['options']>([])
 onMounted(() => {
-  fetchFamilyOptions();
 
+  initDetailInfo();
+
+  fetchFamilyOptions();
   fetchTypeOptions();
 })
+
+async function initDetailInfo() {
+
+  if (!props.id) {
+    return
+  }
+  detailInfo.value = await props.detailFunc(props.id)
+}
 
 async function fetchTypeOptions() {
   typeOptions.value = (await props.typeListFunc())
@@ -205,21 +223,45 @@ watch(
 )
 
 // 提交
+const submitting = ref(false);
 const formRef = ref<any>(null)
 async function onSubmit() {
+
+  if (!formRef.value) {
+    return;
+  }
+  submitting.value = true;
+
   try {
-    submitting.value = true;
     // 表单校验
     await formRef.value?.validate();
-    if (props.id) {
+  } catch (e){
+    submitting.value = false;
+    return;
+  }
 
-    } else {
+  try {
+    // 时间戳转换
+    const start = detailInfo.value.startDate ? dayjs(detailInfo.value.startDate).startOf('day').valueOf() : null
+    const end = detailInfo.value.endDate ? dayjs(detailInfo.value.endDate).endOf('day').valueOf() : null
 
-    }
+    detailInfo.value.startDate = start
+    detailInfo.value.endDate = end
 
+    await props.saveFunc(detailInfo.value)
+
+    // 通知父组件保存完成
+    emit('saved')
   }finally {
     submitting.value = false;
   }
-  console.log(detailInfo.value);
+}
+
+
+function validateTimeRange(){
+  if (!detailInfo.value.startDate || !detailInfo.value.endDate) {
+    return Promise.reject("请选择时间");
+  }
+  return Promise.resolve();
 }
 </script>

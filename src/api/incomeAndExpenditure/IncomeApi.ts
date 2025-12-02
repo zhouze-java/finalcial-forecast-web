@@ -4,7 +4,7 @@ import {
     IncomeTypeDetailResponse,
     IncomeListResponse
 } from "@/api/incomeAndExpenditure/dto/response/IncomeResponse";
-import {IncomeRecordListRequest} from "@/api/incomeAndExpenditure/dto/request/IncomeRequest";
+import {IncomeRecordListRequest, IncomeRecordSaveRequest} from "@/api/incomeAndExpenditure/dto/request/IncomeRequest";
 import {DefaultPageResponse} from "@/api/common/DefaultPageResponse";
 
 
@@ -63,6 +63,23 @@ export function getRecordList(param: IncomeRecordListRequest){
  */
 export function getRecordDetail(id: number){
     return request.get<IncomeTypeDetailResponse>(`/income/record/${id}`);
+}
+
+/**
+ * 新增收入
+ * @param data 收入数据
+ */
+export function createRecord(data: IncomeRecordSaveRequest) {
+    return request.post(`/income/record`, data, {showSuccessMessage: true});
+}
+
+/**
+ * 更新收入
+ * @param id 主键ID
+ * @param data 收入数据
+ */
+export function updateRecord(id: number, data: IncomeRecordSaveRequest) {
+    return request.put(`/income/record/${id}`, data, {showSuccessMessage: true});
 }
 
 /**
