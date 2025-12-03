@@ -2,7 +2,7 @@
   <a-drawer
       :title="detailInfo.id ? '编辑':'新建'"
       :width="720"
-      :open="visible"
+      :open="props.visible"
       :body-style="{ paddingBottom: '80px' }"
       :footer-style="{ textAlign: 'right' }"
       @close="onClose"
@@ -121,15 +121,6 @@ const props = defineProps<{
   saveFunc: (data: any) => Promise<any>
 }>()
 
-const visible = ref(props.visible);
-watch(
-    () => props.visible,
-    (val) => {
-      visible.value = val
-    }
-)
-
-
 const detailInfo = ref<any>(defaultDetailInfo())
 
 function defaultDetailInfo() {
@@ -157,7 +148,6 @@ function onClose() {
 const familyMemberOptions = ref<SelectProps['options']>([]);
 const typeOptions = ref<SelectProps['options']>([])
 onMounted(() => {
-
   initDetailInfo();
 
   fetchFamilyOptions();
@@ -181,6 +171,13 @@ async function fetchTypeOptions() {
           cycle: it.defaultCycle,
         }
       })
+
+  // 加载完类型后，手动触发一次周期计算
+  if (detailInfo.value.typeId) {
+    const type = typeOptions.value.find(it => it.value === detailInfo.value.typeId)
+    detailInfo.value.cycle = type ? cycleEnum[type.cycle] : null
+  }
+
 }
 
 async function fetchFamilyOptions() {

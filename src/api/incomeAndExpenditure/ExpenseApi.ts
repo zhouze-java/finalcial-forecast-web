@@ -5,7 +5,11 @@ import {
     ExpenseTypeDetailResponse,
     ExpenseTypeTreeResponse
 } from "@/api/incomeAndExpenditure/dto/response/ExpenseResponse";
-import {ExpenseRecordListRequest} from "@/api/incomeAndExpenditure/dto/request/ExpenseRequest";
+import {
+    ExpenseRecordListRequest,
+    ExpenseRecordSaveRequest
+} from "@/api/incomeAndExpenditure/dto/request/ExpenseRequest";
+import {DefaultPageResponse} from "@/api/common/DefaultPageResponse";
 
 
 /**
@@ -54,7 +58,7 @@ export function deleteExpenseType(id: number) {
  * @param param 查询参数
  */
 export function getRecordList(param: ExpenseRecordListRequest){
-    return request.post<ExpenseRecordListResponse[]>('/expense/recordList', param)
+    return request.post<DefaultPageResponse<ExpenseRecordListResponse>>('/expense/recordList', param)
 }
 
 /**
@@ -62,7 +66,24 @@ export function getRecordList(param: ExpenseRecordListRequest){
  * @param id ID
  */
 export function getRecordDetail(id: number){
-    return request.get<ExpenseRecordDetailResponse>(`/expense/recordDetail/${id}`);
+    return request.get<ExpenseRecordDetailResponse>(`/expense/record/${id}`);
+}
+
+/**
+ * 保存支出
+ * @param data 支出信息
+ */
+export function createRecord(data: ExpenseRecordSaveRequest) {
+    return request.post(`/expense/record`, data, {showSuccessMessage: true});
+}
+
+/**
+ * 更新支出
+ * @param id 主键
+ * @param data 支出信息
+ */
+export function updateRecord(id: number, data: ExpenseRecordSaveRequest) {
+    return request.put(`/expense/record/${id}`, data, {showSuccessMessage: true});
 }
 
 /**

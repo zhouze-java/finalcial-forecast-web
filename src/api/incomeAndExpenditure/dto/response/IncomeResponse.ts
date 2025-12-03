@@ -17,7 +17,7 @@ export interface IncomeListResponse extends BaseListResponse {
     annualRate?: number
 }
 
-export interface IncomeDetailResponse extends BaseDetailResponse {
+export interface IncomeRecordDetailResponse extends BaseDetailResponse {
     /** 年化收益率（固定资产收入专用，可选） */
     annualRate?: number
 

@@ -2,7 +2,7 @@ import request from '@/api/request'
 import {
     IncomeTypeTreeResponse,
     IncomeTypeDetailResponse,
-    IncomeListResponse
+    IncomeListResponse, IncomeRecordDetailResponse
 } from "@/api/incomeAndExpenditure/dto/response/IncomeResponse";
 import {IncomeRecordListRequest, IncomeRecordSaveRequest} from "@/api/incomeAndExpenditure/dto/request/IncomeRequest";
 import {DefaultPageResponse} from "@/api/common/DefaultPageResponse";
@@ -62,7 +62,7 @@ export function getRecordList(param: IncomeRecordListRequest){
  * @param id 主键ID
  */
 export function getRecordDetail(id: number){
-    return request.get<IncomeTypeDetailResponse>(`/income/record/${id}`);
+    return request.get<IncomeRecordDetailResponse>(`/income/record/${id}`);
 }
 
 /**

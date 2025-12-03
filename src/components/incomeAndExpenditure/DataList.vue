@@ -100,12 +100,15 @@ async function fetchData() {
   }
 
   if (props.searchBarForm) {
-    Object.keys(props.searchBarForm).forEach(key => {
-      const value = props.searchBarForm?.[key];
+    const form = props.searchBarForm;
+    Object.keys(form).forEach(key => {
+      const typedKey = key as keyof FormState;
+      const value = form[typedKey];
+
       if (value !== null && value !== undefined && value !== '') {
-        params[key!] = value;
+        (params as any)[typedKey] = value;
       }
-    })
+    });
   }
 
   const res = await props.listFunc(params);

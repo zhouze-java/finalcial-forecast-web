@@ -54,8 +54,8 @@ import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import {ref} from "vue";
 import SearchBar, {FormState} from "@/components/incomeAndExpenditure/SearchBar.vue";
 import EditDrawer from "@/components/incomeAndExpenditure/EditDrawer.vue";
-import {IncomeDetailResponse} from "@/api/incomeAndExpenditure/dto/response/IncomeResponse";
 import {IncomeRecordSaveRequest} from "@/api/incomeAndExpenditure/dto/request/IncomeRequest";
+import {IncomeRecordDetailResponse} from "@/api/incomeAndExpenditure/dto/response/IncomeResponse";
 
 // tree 里选中的类型
 const selectedKey = ref<number | string | null>(null);
@@ -115,9 +115,13 @@ function drawerClosed() {
 }
 
 async function getIncomeRecordDetail(id: number) {
+
   const res = await getRecordDetail(id);
-  res.typeId = res.incomeTypeId
-  return res;
+
+  return {
+    ...res,
+    typeId: res.incomeTypeId,
+  };
 }
 
 async function saveRecord(data: any) {

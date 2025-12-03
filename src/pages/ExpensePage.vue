@@ -7,14 +7,36 @@
     </template>
 
     <template #search>
-      <search-bar @searchBarSubmit="searchBarSubmit" />
+      <search-bar @searchBarSubmit="searchBarSubmit"/>
+    </template>
+
+    <template #actions>
+      <a-button type="primary" @click="onCreate">新建</a-button>
     </template>
 
     <template #data-list>
-      <DataList :columns="columns" :list-func="getRecordList" :delete-func="deleteRecord" :tree-type="treeType"
-                :type-id="selectedKey" :search-bar-form="searchBarFormRef"/>
+      <DataList :columns="columns"
+                :list-func="getRecordList"
+                :delete-func="deleteRecord"
+                :tree-type="treeType"
+                :type-id="selectedKey"
+                :search-bar-form="searchBarFormRef"
+                @edit="onEdit"
+                :refresh-data="refreshData"
+      />
     </template>
+
   </tree-and-data-list-layout>
+  <EditDrawer v-if="visible"
+              v-model:visible="visible"
+              :id="editId"
+              type="expense"
+              :detail-func="getExpenseRecordDetail"
+              :type-list-func="getExpenseTypeList"
+              :save-func="saveRecord"
+              @drawerClosed="drawerClosed"
+              @saved="drawerSaved"
+  />
 </template>
 
 <script setup lang="ts">
@@ -23,20 +45,22 @@ import {
   deleteExpenseType,
   getExpenseTypeList,
   getRecordList,
-  deleteRecord
+  deleteRecord, getRecordDetail, updateRecord, createRecord
 } from "@/api/incomeAndExpenditure/ExpenseApi";
 import DataList from "@/components/incomeAndExpenditure/DataList.vue";
 import TreeAndDataListLayout from "@/components/common/TreeAndDataListLayout.vue";
 import type {TableColumnsType} from "ant-design-vue";
 import {cycleEnum} from "@/enums/IncomeAndExpenditure/CycleEnum";
 import {ref} from 'vue'
-import SearchBar from "@/components/incomeAndExpenditure/SearchBar.vue";
+import SearchBar, {FormState} from "@/components/incomeAndExpenditure/SearchBar.vue";
+import EditDrawer from "@/components/incomeAndExpenditure/EditDrawer.vue";
+import {ExpenseRecordSaveRequest} from "@/api/incomeAndExpenditure/dto/request/ExpenseRequest";
 
 // tree 里选中的类型
 const selectedKey = ref<number | string | null>(null);
 const treeType = ref<'income' | 'expense'>('expense');
 
-function handleSelected(key: number | string, type: 'income' | 'expense') {
+function handleSelected(key: number | string | null, type: 'income' | 'expense') {
   if (!key || key === 'root') {
     key = null
   }
@@ -62,9 +86,63 @@ const columns: TableColumnsType = [
   },
 ];
 
-const searchBarFormRef = ref<FormState>(null);
-function searchBarSubmit(searchBarForm: FormData) {
+const searchBarFormRef = ref<FormState | null>(null);
+
+function searchBarSubmit(searchBarForm: FormState) {
   searchBarFormRef.value = searchBarForm;
+}
+
+const visible = ref(false);
+
+function onCreate() {
+  visible.value = true
+}
+
+
+const editId = ref<number | null>(null);
+
+function onEdit(id: number) {
+  visible.value = true
+  editId.value = id
+}
+
+function drawerClosed() {
+  editId.value = null;
+}
+
+async function getExpenseRecordDetail(id: number) {
+  const res = await getRecordDetail(id)
+  return {
+    ...res,
+    typeId: res.expenseTypeId,
+  };
+}
+
+async function saveRecord(data: any) {
+  const payload: ExpenseRecordSaveRequest = {
+    description: data.description,
+    amount: data.amount,
+    expenseTypeId: data.typeId,
+    memberId: data.memberId,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    growthRate: data.growthRate,
+  }
+  if (data.id) {
+    await updateRecord(data.id, payload)
+  } else {
+    await createRecord(payload)
+  }
+}
+
+
+const refreshData = ref(0)
+function drawerSaved(){
+  visible.value = false
+  editId.value = null;
+
+  // 通知DataList刷新列表
+  refreshData.value += 1;
 }
 
 </script>
